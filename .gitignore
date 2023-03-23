@@ -1,0 +1,4 @@
+venv/
+pythia-70m-deduped/
+.idea/
+.vscode/
