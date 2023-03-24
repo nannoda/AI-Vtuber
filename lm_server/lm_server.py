@@ -31,30 +31,49 @@ def generate_text(text,
     if generator is None:
         raise ValueError("Generator is not initialized")
     try:
-        out = generator(text, do_sample=do_sample, min_length=min_length, max_length=max_length, top_k=top_k, top_p=top_p)
+        out = generator(text,
+                        do_sample=do_sample,
+                        min_length=min_length,
+                        max_length=max_length,
+                        top_k=top_k,
+                        top_p=top_p,
+                        temperature=temperature,
+                        )
         out = out[0]["generated_text"]
         return out
     except Exception as e:
         return {"error": str(e)}
 
 
-@app.route("/api/gen", methods=["POST", "GET"])
+@app.route("/api/post/gen", methods=["POST"])
 def generate():
-    if flask.request.method == "POST":
-        data = flask.request.json
-        text = data.get("text", "")
-        temperature = data.get("temperature", 0.9)
-        top_k = data.get("top_k", 50)
-        top_p = data.get("top_p", 0.95)
-        do_sample = data.get("do_sample", True)
-        max_length = data.get("max_length", 128)
-        min_length = data.get("min_length", 20)
+    data = flask.request.get_json()
+    text = data["text"]
+    temperature = data.get("temperature", 0.9)
+    top_k = data.get("top_k", 50)
+    top_p = data.get("top_p", 0.95)
+    do_sample = data.get("do_sample", True)
+    max_length = data.get("max_length", 128)
+    min_length = data.get("min_length", 20)
 
-        if text == "":
-            return {"error": "No text provided"}
-        return {"text": generate_text(text, temperature, top_k, top_p, do_sample, max_length, min_length)}
-    else:
-        return {"error": "Only POST requests are supported"}
+    out = generate_text(text, temperature=temperature, top_k=top_k, top_p=top_p, do_sample=do_sample, max_length=max_length,
+                        min_length=min_length)
+    return flask.jsonify(out)
+
+@app.route("/api/get/gen", methods=["GET"])
+def generate_get():
+    data = flask.request.args
+    text = data["text"]
+    temperature = data.get("temperature", 0.9)
+    top_k = data.get("top_k", 50)
+    top_p = data.get("top_p", 0.95)
+    do_sample = data.get("do_sample", True)
+    max_length = data.get("max_length", 128)
+    min_length = data.get("min_length", 20)
+
+    out = generate_text(text, temperature=temperature, top_k=top_k, top_p=top_p, do_sample=do_sample, max_length=max_length,
+                        min_length=min_length)
+    return flask.jsonify(out)
 
 
 def main():
