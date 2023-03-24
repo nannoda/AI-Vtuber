@@ -24,5 +24,8 @@ if __name__ == "__main__":
     # initialize the client
     client = LMClients(port=6060)
     # get the response
-    response = client.get_response("Hello")
+    response = client.get_response("""
+The following is a converation between a streamer and her chat.
+Chat: You totally suck at this game!
+Streamer:""")
     print(response)

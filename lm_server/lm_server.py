@@ -79,7 +79,9 @@ def generate_get():
 def main():
     global generator
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="EleutherAI/gpt-neo-125M", help="The model to use")
+    parser.add_argument( "--model", type=str, default="EleutherAI/gpt-neo-1.3B",
+                        help="The model to use, e.g. EleutherAI/gpt-neo-1.3B. "
+                             "See https://huggingface.co/models for more models.")
     parser.add_argument("--port", type=int, default=6060, help="The port to use")
     args = parser.parse_args()
     generator = pipeline("text-generation", model=args.model)
