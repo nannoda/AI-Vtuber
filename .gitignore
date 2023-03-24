@@ -1,4 +1,5 @@
 venv/
 pythia-70m-deduped/
+pythia-1b-deduped/
 .idea/
 .vscode/
