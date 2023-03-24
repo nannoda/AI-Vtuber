@@ -1,29 +1,35 @@
 import asyncio
-from transformers import GPTNeoXForCausalLM, AutoTokenizer
+from transformers import pipeline
+
+generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125M')
+
+prompt = """
+This is how a toxic entitled evil female streamer responded in a conversation. She would respond in a toxic and rude manner. She would talk about the message and would elaborate on it as well as share some of her experiences if possible. She would also go on a tangent if possible.
+"""
+
+
+def generate_response(chat_text: str) -> str:
+    input_text = prompt + "Chat: " + chat_text + "\nstreamer:"
+    out = generator(input_text,
+                    do_sample=True,
+                    min_length=20,
+                    max_length=128,
+                    top_k=50,
+                    top_p=0.95,
+                    temperature=0.9,
+                    )[0]['generated_text']
+    return out.split("streamer:")[1]
 
 
 async def main():
-    model = GPTNeoXForCausalLM.from_pretrained(
-        "EleutherAI/pythia-70m-deduped",
-        revision="step3000",
-        cache_dir="./pythia-70m-deduped/step3000",
-    )
+    while True:
+        chat_text = input("You: ")
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        "EleutherAI/pythia-70m-deduped",
-        revision="step3000",
-        cache_dir="./pythia-70m-deduped/step3000",
-    )
+        if chat_text == "exit":
+            break
 
-    inputs = tokenizer(
-        "The following is a conversation between a vtuber and her chat.\nChat: Hello, vtuber!\n Vtuber: Hello, chat!",
-        return_tensors="pt",
-        max_length=1024,
-        truncation=True,
-    )
-    tokens = model.generate(**inputs, max_length=128, do_sample=True, top_p=0.95, top_k=60, temperature=0.9)
-    tokenizer.decode(tokens[0])
-    print(tokenizer.decode(tokens[0]))
+        response = generate_response(chat_text)
+        print(f"Bot: {response}")
 
 
 if __name__ == "__main__":
