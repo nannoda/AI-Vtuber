@@ -1,0 +1,9 @@
+asyncio
+transformers
+pytchat
+openai
+Flask
+argparse
+requests
+pydub
+pyttsx3
